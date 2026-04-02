@@ -1,3 +1,4 @@
+install/banco.sql
 -- ============================================================
 --  ADEGA ERP — Schema PostgreSQL
 --  Preparado para migração futura do IndexedDB para Postgres

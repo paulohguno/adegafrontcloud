@@ -5,6 +5,9 @@ echo ======================================
 echo INICIANDO INSTALACAO DO SISTEMA ADEGA
 echo ======================================
 
+:: Ajusta PATH do PostgreSQL (pode mudar versão)
+set PATH=%PATH%;C:\Program Files\PostgreSQL\16\bin
+
 :: ==============================
 :: 1. Verificar PostgreSQL
 :: ==============================
@@ -17,20 +20,14 @@ IF %ERRORLEVEL% NEQ 0 (
 
     echo Instalando PostgreSQL...
     start /wait postgres.exe --mode unattended --unattendedmodeui none --superpassword "123"
-
 ) ELSE (
     echo PostgreSQL ja instalado!
 )
 
 :: ==============================
-:: 2. Iniciar servico (auto detect)
+:: 2. Iniciar servico
 :: ==============================
-echo Verificando servico PostgreSQL...
-
-for /f "tokens=*" %%i in ('sc query state^= all ^| findstr /i "postgresql"') do (
-    set service=%%i
-)
-
+echo Iniciando servico PostgreSQL...
 net start postgresql-x64-16 >nul 2>nul
 
 :: ==============================
@@ -38,13 +35,11 @@ net start postgresql-x64-16 >nul 2>nul
 :: ==============================
 set PGPASSWORD=123
 
-echo Verificando banco...
-
-psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname='adega'" | find "1" >nul
+psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname='adega_db'" | find "1" >nul
 
 IF %ERRORLEVEL% NEQ 0 (
-    echo Criando banco adega...
-    psql -U postgres -c "CREATE DATABASE adega;"
+    echo Criando banco adega_db...
+    psql -U postgres -c "CREATE DATABASE adega_db;"
 ) ELSE (
     echo Banco ja existe!
 )
@@ -53,14 +48,23 @@ IF %ERRORLEVEL% NEQ 0 (
 :: 4. Criar tabelas
 :: ==============================
 echo Criando estrutura do banco...
-
-psql -U postgres -d adega -f banco.sql
+psql -U postgres -d adega_db -f banco.sql
 
 :: ==============================
-:: 5. Final
+:: 5. Subir backend
+:: ==============================
+echo Iniciando backend...
+
+cd ../backend
+call npm install
+start cmd /k "node server.js"
+
+:: ==============================
+:: FINAL
 :: ==============================
 echo ======================================
-echo SISTEMA INSTALADO COM SUCESSO!
+echo SISTEMA PRONTO!
+echo Backend: http://localhost:3000
 echo ======================================
 
 pause
