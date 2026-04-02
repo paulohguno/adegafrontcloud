@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADEGA — Sistema de Gestão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================
+   DESIGN SYSTEM
+=========================== */
+:root {
+  --bg:         #0a0806;
+  --bg2:        #110d0a;
+  --bg3:        #1a1410;
+  --bg4:        #221a14;
+  --surface:    #2a1f17;
+  --surface2:   #342519;
+  --border:     rgba(180,120,60,0.18);
+  --border2:    rgba(180,120,60,0.35);
+  --gold:       #c8923a;
+  --gold2:      #e8b566;
+  --gold3:      #f5d08c;
+  --wine:       #8b1a1a;
+  --wine2:      #b02222;
+  --crimson:    #dc3545;
+  --text:       #f0e6d8;
+  --text2:      #b8a898;
+  --text3:      #7a6a58;
+  --green:      #4caf7a;
+  --green2:     #2d7a50;
+  --radius:     10px;
+  --radius2:    16px;
+  --shadow:     0 4px 24px rgba(0,0,0,0.6);
+  --shadow2:    0 8px 48px rgba(0,0,0,0.8);
+  --font-display: 'Playfair Display', serif;
+  --font-mono:    'DM Mono', monospace;
+  --font-body:    'DM Sans', sans-serif;
+  --transition:   all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ===========================
+   LAYOUT
+=========================== */
+#app {
+  display: grid;
+  grid-template-columns: 200px 1fr 300px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===========================
+   LEFT SIDEBAR
+=========================== */
+#sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.logo-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 2px;
+  display: block;
+}
+
+.logo-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  padding: 16px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-btn::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0;
+  background: var(--gold);
+  border-radius: 0 2px 2px 0;
+  transition: width 0.2s;
+}
+
+.nav-btn:hover {
+  background: var(--surface);
+  color: var(--gold2);
+}
+
+.nav-btn:hover::before { width: 3px; }
+
+.nav-btn .nav-icon {
+  width: 22px;
+  text-align: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
+.nav-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+}
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-calc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  width: 100%;
+}
+.btn-calc:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ===========================
+   MAIN CONTENT
+=========================== */
+#main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.main-header {
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.main-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.main-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-input {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  width: 200px;
+  transition: var(--transition);
+  outline: none;
+}
+
+.search-input::placeholder { color: var(--text3); }
+.search-input:focus { border-color: var(--gold); width: 240px; }
+
+/* ===========================
+   PRODUCTS GRID
+=========================== */
+#produtos-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+#listaProdutos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.product-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 18px 14px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--wine), var(--gold));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.product-card:hover {
+  border-color: var(--border2);
+  background: var(--bg3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.product-card:hover::before { opacity: 1; }
+
+.product-card:active { transform: translateY(0) scale(0.98); }
+
+.product-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.product-price {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gold2);
+}
+
+.product-cost {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.product-stock-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 20px;
+  background: var(--bg4);
+  color: var(--text3);
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.stock-ok { background: rgba(76,175,122,0.12); color: var(--green); }
+.stock-low { background: rgba(220,53,69,0.15); color: #ff6b6b; }
+
+.product-delete {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text3);
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.product-card:hover .product-delete { display: flex; }
+.product-delete:hover { background: var(--wine); color: white; border-color: var(--wine); }
+
+/* ===========================
+   RIGHT SIDEBAR (CART)
+=========================== */
+#cart-sidebar {
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cart-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--text);
+}
+
+.cart-add-client {
+  width: 28px; height: 28px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--gold);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.cart-add-client:hover { background: var(--gold); color: var(--bg); }
+
+#listaClientesPendentes {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--text3);
+}
+
+.empty-cart-icon { font-size: 36px; opacity: 0.4; }
+
+.empty-cart p {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.client-pendencia-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.client-pendencia-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--gold);
+  border-radius: 3px 0 0 3px;
+}
+
+.client-pendencia-card:hover {
+  border-color: var(--border2);
+  background: var(--surface);
+}
+
+.client-nome {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.client-info {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.client-total {
+  color: var(--gold2);
+  font-weight: 500;
+}
+
+.cart-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stat-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--gold2);
+  font-weight: 500;
+}
+
+/* ===========================
+   MODALS
+=========================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-overlay.active { display: flex; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-box {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  box-shadow: var(--shadow2);
+  width: 90%;
+  max-width: 520px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.2s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+}
+
+.modal-box.modal-lg { max-width: 720px; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-head {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--text);
+}
+
+.modal-close {
+  width: 30px; height: 30px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.modal-close:hover { border-color: var(--crimson); color: var(--crimson); }
+
+.modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-foot {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* ===========================
+   FORM ELEMENTS
+=========================== */
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.inp {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 13px;
+  transition: var(--transition);
+  outline: none;
+}
+
+.inp::placeholder { color: var(--text3); }
+.inp:focus { border-color: var(--gold); background: var(--bg4); }
+
+select.inp { cursor: pointer; }
+select.inp option { background: var(--bg3); }
+
+/* ===========================
+   BUTTONS
+=========================== */
+.btn {
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--bg);
+}
+.btn-primary:hover { background: var(--gold2); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+.btn-danger {
+  background: var(--wine);
+  color: var(--text);
+}
+.btn-danger:hover { background: var(--wine2); }
+
+.btn-success {
+  background: var(--green2);
+  color: var(--text);
+}
+.btn-success:hover { background: var(--green); }
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* ===========================
+   TABLES
+=========================== */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tbl th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.tbl td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.tbl tbody tr:hover { background: var(--bg3); }
+
+.tbl .total-row td {
+  background: var(--bg3);
+  font-weight: 500;
+  color: var(--gold2);
+  border-top: 2px solid var(--border2);
+}
+
+/* ===========================
+   BADGES
+=========================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.badge-gold  { background: rgba(200,146,58,0.15); color: var(--gold2); }
+.badge-green { background: rgba(76,175,122,0.15); color: var(--green); }
+.badge-red   { background: rgba(220,53,69,0.15);  color: #ff6b6b; }
+
+/* ===========================
+   ESTOQUE ITEMS
+=========================== */
+.estoque-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg3);
+  margin-bottom: 8px;
+  transition: var(--transition);
+}
+
+.estoque-item-row:hover { border-color: var(--border2); }
+
+.ei-name { flex: 1; font-size: 13px; color: var(--text); }
+.ei-qty  { font-family: var(--font-mono); font-size: 12px; color: var(--text2); min-width: 50px; }
+.ei-cost { font-family: var(--font-mono); font-size: 12px; color: var(--gold); min-width: 70px; }
+
+/* ===========================
+   VENDA MODAL
+=========================== */
+.venda-info-bar {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.vi-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.vi-val {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.vi-val.profit { color: var(--green); }
+.vi-val.cost   { color: var(--text2); }
+
+/* ===========================
+   PENDENCIA TABLE
+=========================== */
+.pendencia-total-bar {
+  background: var(--bg3);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.pendencia-total-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.pendencia-total-val {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--gold2);
+  font-weight: 500;
+}
+
+/* ===========================
+   TOAST NOTIFICATIONS
+=========================== */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  align-items: center;
+}
+
+.toast {
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow);
+  animation: toastIn 0.3s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: all;
+}
+
+.toast-success { background: var(--green2); color: white; }
+.toast-error   { background: var(--wine);   color: white; }
+.toast-info    { background: var(--surface2); color: var(--gold2); border: 1px solid var(--border2); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ===========================
+   CALCULADORA FLUTUANTE
+=========================== */
+#calc-float {
+  position: fixed;
+  bottom: 80px;
+  left: 218px;
+  width: 240px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  box-shadow: var(--shadow2);
+  z-index: 800;
+  display: none;
+  overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
+
+.calc-screen-wrap {
+  padding: 14px 14px 8px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+
+.calc-expr {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text3);
+  min-height: 16px;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calc-result {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  color: var(--gold2);
+  text-align: right;
+  line-height: 1;
+  padding-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+}
+
+.calc-key {
+  background: var(--bg2);
+  border: none;
+  color: var(--text);
+  padding: 14px 0;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.1s;
+  width: 100%;
+}
+
+.calc-key:hover  { background: var(--bg3); }
+.calc-key:active { background: var(--bg4); }
+.calc-key.op     { color: var(--gold2); }
+.calc-key.clear  { color: #ff6b6b; }
+.calc-key.equal  { background: var(--gold); color: var(--bg); font-size: 18px; }
+.calc-key.equal:hover { background: var(--gold2); }
+.calc-key.zero   { grid-column: span 2; }
+
+/* ===========================
+   CHECKBOX CUSTOM
+=========================== */
+.chk {
+  width: 16px; height: 16px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+/* ===========================
+   COMPOSICAO TAGS
+=========================== */
+.comp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text2);
+  margin: 3px;
+}
+
+.comp-tag .qty-inp {
+  width: 44px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border2);
+  color: var(--gold2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: center;
+  outline: none;
+}
+
+.comp-tag .remove-comp {
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.comp-tag .remove-comp:hover { color: #ff6b6b; }
+
+/* ===========================
+   LOADING PULSE
+=========================== */
+.pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===========================
+   ANALYTICS CARDS
+=========================== */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.analytic-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 16px;
+}
+
+.ac-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.ac-value {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--gold2);
+}
+
+.ac-sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+/* ===========================
+   RESPONSIVE ADJUSTMENTS
+=========================== */
+@media (max-width: 1100px) {
+  #app { grid-template-columns: 180px 1fr 260px; }
+}
+
+@media (max-width: 900px) {
+  #app { grid-template-columns: 56px 1fr 0; }
+  .sidebar-logo .logo-title, .sidebar-logo .logo-sub, .nav-btn span.nav-text { display: none; }
+  .nav-btn { justify-content: center; padding: 12px 0; }
+  .nav-label, .sidebar-footer { display: none; }
+  #cart-sidebar { display: none; }
+}
+
+/* ===========================
+   ESTOQUE QUANTITY INPUT GROUP
+=========================== */
+.input-group-qty {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qty-btn {
+  width: 28px; height: 28px;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ===========================
+   ACCENT GLOW EFFECT
+=========================== */
+.glow-gold { box-shadow: 0 0 20px rgba(200,146,58,0.25); }
+.glow-green { box-shadow: 0 0 20px rgba(76,175,122,0.2); }
+</style>
+</head>
+
+<body>
+<div id="app">
+
+  <!-- LEFT SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🍷</span>
+      <span class="logo-title">ADEGA</span>
+      <span class="logo-sub">Gestão & Vendas</span>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-label">Catálogo</span>
+      <button class="nav-btn" onclick="openModal('modal-produto')">
+        <span class="nav-icon">➕</span>
+        <span class="nav-text">Novo Produto</span>
+      </button>
+      <div class="nav-divider"></div>
+      <span class="nav-label">Estoque</span>
+      <button class="nav-btn" onclick="abrirModalEstoque()">
+        <span class="nav-icon">📥</span>
+        <span class="nav-text">Entrada</span>
+      </button>
+      <button class="nav-btn" onclick="openEstoqueRelatorio()">
+        <span class="nav-icon">📦</span>
+        <span class="nav-text">Ver Estoque</span>
+      </button>
+      <div class="nav-divider"></div>
+      <span class="nav-label">Relatórios</span>
+      <button class="nav-btn" onclick="openVendas()">
+        <span class="nav-icon">💰</span>
+        <span class="nav-text">Vendas</span>
+      </button>
+      <button class="nav-btn" onclick="openDashboard()">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">Dashboard</span>
+      </button>
+      <div class="nav-divider"></div>
+      <span class="nav-label">Clientes</span>
+      <button class="nav-btn" onclick="abrirModalCliente()">
+        <span class="nav-icon">👤</span>
+        <span class="nav-text">Cadastrar</span>
+      </button>
+      <button class="nav-btn" onclick="openClientesList()">
+        <span class="nav-icon">👥</span>
+        <span class="nav-text">Lista</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-calc" onclick="toggleCalc()">
+        <span>🧮</span> Calculadora
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main id="main">
+    <div class="main-header">
+      <div>
+        <div class="main-title">Catálogo de Produtos</div>
+        <div class="main-sub" id="produtos-sub">Carregando...</div>
+      </div>
+      <div class="header-search">
+        <input class="search-input" id="searchProdutos" placeholder="🔍  Buscar produto..." oninput="filtrarProdutos(this.value)">
+      </div>
+    </div>
+    <div id="produtos-area">
+      <div class="section-label">Disponíveis para venda</div>
+      <div id="listaProdutos">
+        <div class="empty-cart" style="grid-column:1/-1;height:200px">
+          <div class="empty-cart-icon pulse">🍷</div>
+          <p>Carregando produtos...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT SIDEBAR CART -->
+  <aside id="cart-sidebar">
+    <div class="cart-header">
+      <div class="cart-title">Pendências</div>
+      <button class="cart-add-client" onclick="abrirModalCliente()" title="Novo Cliente">+</button>
+    </div>
+    <div id="listaClientesPendentes">
+      <div class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <p>Nenhuma pendência<br>aberta</p>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-label">Pendentes</span>
+          <div class="stat-value" id="stat-pendentes">0</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Total</span>
+          <div class="stat-value" id="stat-total-pend">R$0</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============================
+     MODALS
+============================ -->
+
+<!-- PRODUTO -->
+<div class="modal-overlay" id="modal-produto">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Criar Produto</div>
+      <button class="modal-close" onclick="closeModal('modal-produto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nome do Produto</label>
+        <input id="prod_nome" class="inp" placeholder="Ex: Taça de Malbec">
+      </div>
+      <div class="field">
+        <label>Preço de Venda (R$)</label>
+        <input id="prod_preco" type="number" class="inp" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label>Composição — Itens do Estoque</label>
+        <select id="est_select_prod" class="inp mb-2" onchange="adicionarItemAoProduto(this.value); this.value=''">
+          <option value="">Selecione para adicionar...</option>
+        </select>
+        <div id="composicao-tags" style="margin-top:8px;"></div>
+      </div>
+      <div id="custo-preview" style="display:none" class="field">
+        <div style="display:flex;gap:16px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">
+          <div><span class="vi-label">Custo</span><span class="vi-val cost" id="prev-custo">—</span></div>
+          <div><span class="vi-label">Margem</span><span class="vi-val profit" id="prev-margem">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-produto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProdutoFinal()">✓ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ESTOQUE ENTRADA -->
+<div class="modal-overlay" id="modal-estoque">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Entrada de Estoque</div>
+      <button class="modal-close" onclick="closeModal('modal-estoque')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Item existente ou novo</label>
+        <select id="est_select_existente" class="inp" onchange="selecionarEstoqueExistente()">
+          <option value="">— Criar Novo Item —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nome do Item</label>
+        <input id="est_nome" class="inp" placeholder="Ex: Vinho Tinto Malbec 750ml">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field">
+          <label>Quantidade</label>
+          <input id="est_qtd" type="number" class="inp" placeholder="0" min="1">
+        </div>
+        <div class="field">
+          <label>Custo Unitário (R$)</label>
+          <input id="est_custo" type="number" class="inp" placeholder="0.00" step="0.01" min="0">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-estoque')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarNoEstoque()">✓ Confirmar Entrada</button>
+    </div>
+  </div>
+</div>
+
+<!-- ESTOQUE RELATÓRIO -->
+<div class="modal-overlay" id="modal-estoque-rel">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="modal-title">Estoque</div>
+      <button class="modal-close" onclick="closeModal('modal-estoque-rel')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="estoque-rel-analytics" class="analytics-grid" style="display:grid"></div>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>ID</th><th>Item</th><th>Qtd</th><th>Custo Unit.</th><th>Total</th><th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="corpoRelatorioEstoque"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VENDAS -->
+<div class="modal-overlay" id="modal-vendas">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="modal-title">Histórico de Vendas</div>
+      <button class="modal-close" onclick="closeModal('modal-vendas')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="vendas-analytics" class="analytics-grid" style="display:grid"></div>
+      <table class="tbl">
+        <thead>
+          <tr><th>Produto</th><th>Cliente</th><th>Valor</th><th>Custo</th><th>Lucro</th><th>Data</th></tr>
+        </thead>
+        <tbody id="corpoVendas"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VENDA PRODUTO -->
+<div class="modal-overlay" id="modal-venda-prod">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title" id="venda-prod-title">Adicionar à Pendência</div>
+      <button class="modal-close" onclick="closeModal('modal-venda-prod')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="venda-info-bar" id="venda-info-bar"></div>
+      <div class="field">
+        <label>Itens do Combo</label>
+        <div id="corpoItensVenda"></div>
+      </div>
+      <div class="field">
+        <label>Adicionar item extra</label>
+        <select class="inp" onchange="adicionarItemAoComboVenda(this.value); this.value=''">
+          <option value="">Selecione para adicionar...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Alocar para Cliente</label>
+        <div style="display:flex;gap:8px">
+          <select id="select_cliente_venda" class="inp" style="flex:1"></select>
+          <button class="btn btn-ghost btn-sm" onclick="abrirModalCliente()">+ Novo</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-venda-prod')">Cancelar</button>
+      <button class="btn btn-primary" onclick="adicionarAPendencia()">🛒 Adicionar Pendência</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTE -->
+<div class="modal-overlay" id="modal-cliente">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-head">
+      <div class="modal-title">Cadastrar Cliente</div>
+      <button class="modal-close" onclick="closeModal('modal-cliente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nome</label>
+        <input id="cli_nome" class="inp" placeholder="Nome completo">
+      </div>
+      <div class="field">
+        <label>Telefone</label>
+        <input id="cli_telefone" class="inp" placeholder="(00) 00000-0000">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cliente')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCliente()">✓ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- LISTA CLIENTES -->
+<div class="modal-overlay" id="modal-clientes-list">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="modal-title">Clientes Cadastrados</div>
+      <button class="modal-close" onclick="closeModal('modal-clientes-list')">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="tbl">
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Telefone</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="corpoClientesList"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PENDENCIAS CLIENTE -->
+<div class="modal-overlay" id="modal-pendencia-cliente">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="modal-title" id="tituloModalPendenciaCliente">Pendências</div>
+      <button class="modal-close" onclick="closeModal('modal-pendencia-cliente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="chk" id="checkTodasPendencias" onchange="toggleTodasPendencias(this)"></th>
+            <th>Produto</th>
+            <th>Valor (R$)</th>
+            <th>Custo</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="corpoTabelaPendenciasCliente"></tbody>
+      </table>
+      <div class="pendencia-total-bar">
+        <span class="pendencia-total-label">Total Selecionado</span>
+        <span class="pendencia-total-val">R$ <span id="spanTotalSelecionadoPendencia">0,00</span></span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-pendencia-cliente')">Fechar</button>
+      <button class="btn btn-success" onclick="finalizarPendenciasSelecionadas()">✓ Finalizar Selecionados</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="modal-overlay" id="modal-dashboard">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="modal-title">📊 Dashboard</div>
+      <button class="modal-close" onclick="closeModal('modal-dashboard')">✕</button>
+    </div>
+    <div class="modal-body" id="dashboard-body">
+    </div>
+  </div>
+</div>
+
+<!-- CALCULADORA FLUTUANTE -->
+<div id="calc-float">
+  <div class="calc-screen-wrap">
+    <div class="calc-expr" id="calc-expr">0</div>
+    <div class="calc-result" id="calc-result">0</div>
+  </div>
+  <div class="calc-grid">
+    <button class="calc-key clear" onclick="calcClear()">C</button>
+    <button class="calc-key op" onclick="calcOp('backspace')">⌫</button>
+    <button class="calc-key op" onclick="calcOp('%')">%</button>
+    <button class="calc-key op" onclick="calcOp('/')">÷</button>
+    <button class="calc-key" onclick="calcNum('7')">7</button>
+    <button class="calc-key" onclick="calcNum('8')">8</button>
+    <button class="calc-key" onclick="calcNum('9')">9</button>
+    <button class="calc-key op" onclick="calcOp('*')">×</button>
+    <button class="calc-key" onclick="calcNum('4')">4</button>
+    <button class="calc-key" onclick="calcNum('5')">5</button>
+    <button class="calc-key" onclick="calcNum('6')">6</button>
+    <button class="calc-key op" onclick="calcOp('-')">−</button>
+    <button class="calc-key" onclick="calcNum('1')">1</button>
+    <button class="calc-key" onclick="calcNum('2')">2</button>
+    <button class="calc-key" onclick="calcNum('3')">3</button>
+    <button class="calc-key op" onclick="calcOp('+')">+</button>
+    <button class="calc-key zero" onclick="calcNum('0')">0</button>
+    <button class="calc-key" onclick="calcNum('.')">.</button>
+    <button class="calc-key equal" onclick="calcEquals()">=</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<script src="js/db.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/estoque.js"></script>
+<script src="js/produto.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/apps.js"></script>
+</body>
+</html>
