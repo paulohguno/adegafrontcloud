@@ -1,10 +1,13 @@
 @echo off
 title Instalador Adega System
 
-echo ===============================
-echo Verificando PostgreSQL...
-echo ===============================
+echo ======================================
+echo INICIANDO INSTALACAO DO SISTEMA ADEGA
+echo ======================================
 
+:: ==============================
+:: 1. Verificar PostgreSQL
+:: ==============================
 where psql >nul 2>nul
 IF %ERRORLEVEL% NEQ 0 (
     echo PostgreSQL NAO encontrado!
@@ -15,24 +18,30 @@ IF %ERRORLEVEL% NEQ 0 (
     echo Instalando PostgreSQL...
     start /wait postgres.exe --mode unattended --unattendedmodeui none --superpassword "123"
 
-    echo Instalacao concluida!
 ) ELSE (
     echo PostgreSQL ja instalado!
 )
 
-echo ===============================
-echo Verificando servico...
-echo ===============================
+:: ==============================
+:: 2. Iniciar servico (auto detect)
+:: ==============================
+echo Verificando servico PostgreSQL...
+
+for /f "tokens=*" %%i in ('sc query state^= all ^| findstr /i "postgresql"') do (
+    set service=%%i
+)
 
 net start postgresql-x64-16 >nul 2>nul
 
-echo ===============================
-echo Criando banco...
-echo ===============================
-
+:: ==============================
+:: 3. Criar banco
+:: ==============================
 set PGPASSWORD=123
 
+echo Verificando banco...
+
 psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname='adega'" | find "1" >nul
+
 IF %ERRORLEVEL% NEQ 0 (
     echo Criando banco adega...
     psql -U postgres -c "CREATE DATABASE adega;"
@@ -40,14 +49,18 @@ IF %ERRORLEVEL% NEQ 0 (
     echo Banco ja existe!
 )
 
-echo ===============================
-echo Criando tabelas...
-echo ===============================
+:: ==============================
+:: 4. Criar tabelas
+:: ==============================
+echo Criando estrutura do banco...
 
 psql -U postgres -d adega -f banco.sql
 
-echo ===============================
-echo FINALIZADO COM SUCESSO!
-echo ===============================
+:: ==============================
+:: 5. Final
+:: ==============================
+echo ======================================
+echo SISTEMA INSTALADO COM SUCESSO!
+echo ======================================
 
 pause
